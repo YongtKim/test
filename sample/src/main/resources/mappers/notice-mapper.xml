@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="noticemapper">
+	
+	<resultMap type="notice" id="noticeResult">
+		<id property="notice_no" column="NOTICE_NO" />
+	 	<result property="notice_title" column="NOTICE_TITLE"/>
+		<result property="notice_writer" column="NOTICE_WRITER"/>
+		<result property="notice_date" column="NOTICE_DATE"/>
+		<result property="notice_content" column="NOTICE_CONTENT"/>
+		<result property="hit" column="HIT"/>
+	</resultMap>
+	<select id="nlist" resultMap="noticeResult">
+		select * from notice order by notice_no desc
+	</select>
+	
+	<resultMap type="notice" id="selectNotice">
+		<id property="notice_no" column="NOTICE_NO" />
+	 	<result property="notice_title" column="NOTICE_TITLE"/>
+		<result property="notice_writer" column="NOTICE_WRITER"/>
+		<result property="notice_date" column="NOTICE_DATE"/>
+		<result property="notice_content" column="NOTICE_CONTENT"/>
+		<result property="hit" column="HIT"/>
+	</resultMap>	
+	<select id="notice" resultMap="selectNotice" parameterType="int">
+		select * from notice 
+		<where>
+			notice_no = #{no}
+		</where>
+	</select>
+	
+	<resultMap type="notice" id="searchNTitle">
+		<id property="notice_no" column="NOTICE_NO" />
+	 	<result property="notice_title" column="NOTICE_TITLE"/>
+		<result property="notice_writer" column="NOTICE_WRITER"/>
+		<result property="notice_date" column="NOTICE_DATE"/>
+		<result property="notice_content" column="NOTICE_CONTENT"/>
+		<result property="hit" column="HIT"/>
+	</resultMap>
+	<select id="nsearchTitle" resultMap="searchNTitle" parameterType="String">
+		select * from notice
+		<where>
+			<bind name="patten" value="'%'+_parameter+'%'"/>
+			notice_title like #{patten} order by notice_no desc
+		</where>
+	</select>
+
+	<resultMap type="notice" id="searchNWriter">
+		<id property="notice_no" column="NOTICE_NO" />
+	 	<result property="notice_title" column="NOTICE_TITLE"/>
+		<result property="notice_writer" column="NOTICE_WRITER"/>
+		<result property="notice_date" column="NOTICE_DATE"/>
+		<result property="notice_content" column="NOTICE_CONTENT"/>
+		<result property="hit" column="HIT"/>
+	</resultMap>
+	<select id="nsearchWriter" resultMap="searchNWriter" parameterType="String">
+		select * from notice
+		<where>
+		<bind name="patten" value="'%'+_parameter+'%'"/>
+			notice_writer like #{patten} order by notice_no desc
+		</where>
+	</select>
+	
+	<resultMap type="notice" id="searchNDate">
+		<id property="notice_no" column="NOTICE_NO" />
+	 	<result property="notice_title" column="NOTICE_TITLE"/>
+		<result property="notice_writer" column="NOTICE_WRITER"/>
+		<result property="notice_date" column="NOTICE_DATE"/>
+		<result property="notice_content" column="NOTICE_CONTENT"/>
+		<result property="hit" column="HIT"/>
+	</resultMap>
+
+	<select id="nsearchDate" resultMap="searchNDate" parameterType="hashmap">
+		select * from notice 
+		<where>
+			NOTICE_DATE between #{start} and #{end} order by notice_no desc
+		</where>
+	</select>
+	
+	<delete id="ndelete"  parameterType="int">
+		delete from notice
+		<where>
+			notice_no = #{no}
+		</where>
+	</delete>
+
+	<update id="nupdate" parameterType="notice">
+		update notice
+		<trim prefix="set" prefixOverrides=",">
+		<if test="notice_title != null">notice_title = #{notice_title},</if>
+		<if test="notice_content != null">notice_content = #{notice_content}</if>
+		</trim>
+		<where>
+			notice_no = #{notice_no}
+		</where>
+	</update>
+	
+	<insert id="ninsert" parameterType="notice">
+		insert into notice values ((select max(notice_no) from notice) + 1, #{notice_title}, #{notice_writer}, sysdate, #{notice_content},null)
+	</insert>
+</mapper>
